@@ -1,47 +1,68 @@
-'''
-I used an array to store values, and before adding a new value to the hashset variable, 
-I checked if it already existed; while removing, I iterated through the array, compared 
-each element with the key, and if found, I popped the element and returned immediately to 
-avoid index errors caused by the list shrinking.
-'''
+# Time Complexity:
+# - add: O(1) on average
+# - remove: O(1) on average
+# - contains: O(1) on average
+#   (Assuming a good hash distribution and limited collisions)
+#
+# Space Complexity: O(n + c), where
+# - n is the number of elements
+# - c is the capacity of the hash set (initial array size)
+#
+# Successfully ran on Leetcode: Yes
+# Challenges faced: Initial conceptual understanding of hashing and chaining was difficult
+
+
+class Node():
+    def __init__(self,key):
+        self.key = key
+        self.next = None
 
 class MyHashSet(object):
 
     def __init__(self):
-        self.hashset = []
-        
+        self.hash_set = [Node(i) for i in range(10**4) ]
 
     def add(self, key):
         """
         :type key: int
         :rtype: None
         """
-        if key not in self.hashset:
-            self.hashset.append(key)
-        
+        idx = key%len(self.hash_set)
+        idx_node = self.hash_set[idx]
+        while idx_node.next:
+            if idx_node.next.key == key:
+                return
+            idx_node = idx_node.next
+        idx_node.next = Node(key)
+
+
 
     def remove(self, key):
         """
         :type key: int
         :rtype: None
         """
+        idx = key%len(self.hash_set)
+        idx_node = self.hash_set[idx]
+        while idx_node.next:
 
-        for i in range(0,len(self.hashset)):
-            if key == self.hashset[i]:
-                popped_item = self.hashset.pop(i)
+            if idx_node.next.key == key:
+                idx_node.next = idx_node.next.next
                 return
-        
+            idx_node = idx_node.next
 
     def contains(self, key):
         """
         :type key: int
         :rtype: bool
         """
-        if key in self.hashset:
-            return True
-        return False
+        idx_node = self.hash_set[key%len(self.hash_set)]
+        while idx_node.next:
+            if idx_node.next.key == key:
+                return True
+            idx_node = idx_node.next
 
-        
+        return False
 
 
 # Your MyHashSet object will be instantiated and called as such:
@@ -49,15 +70,3 @@ class MyHashSet(object):
 # obj.add(key)
 # obj.remove(key)
 # param_3 = obj.contains(key)
-
-hs = MyHashSet()
-key = 3
-hs.add(1)
-hs.add(2)
-hs.add(3)
-hs.add(4)
-hs.add(5)
-hs.remove(3)
-hs.contains(4)
-hs.contains(3)
-
